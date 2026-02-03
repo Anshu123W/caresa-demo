@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (id.isNotEmpty && pass.isNotEmpty) {
       // Logic for successful login
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/selectprimarygoals');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please enter both credentials")),

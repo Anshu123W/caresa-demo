@@ -1,7 +1,8 @@
+import 'package:firstproduction_pro/pages/Prog_bar_primary_goals.dart';
+import 'package:firstproduction_pro/pages/crafting_space.dart';
+import 'package:firstproduction_pro/pages/goals_primary_goals.dart';
 import 'package:flutter/material.dart';
-import 'package:internshiptask1/Goals_primary_goals.dart';
-import 'package:internshiptask1/Prog_bar_primary_goals.dart';
-import 'package:internshiptask1/Crafting_space.dart';
+
 class TopBar extends StatefulWidget {
   const TopBar({super.key});
 
@@ -53,11 +54,12 @@ class _TopBarState extends State<TopBar> {
             children: [
               Stepindicator(currentStep: selectedGoals.length),
               const SizedBox(height: 20),
-              const Align(
+              Align(
             alignment: Alignment.centerLeft,
-            child: Icon(Icons.arrow_back),
-          ),
-              const SizedBox(height: 16),
+            child :IconButton(icon: const Icon(Icons.arrow_back,),
+            onPressed: (){Navigator.pop(context);} ,) ,
+        ),
+            const SizedBox(height: 16),
               const Align(alignment:Alignment.center,
                 child: Text(
                 'Select your Primary Goals',

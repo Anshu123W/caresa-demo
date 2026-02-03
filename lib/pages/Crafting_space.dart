@@ -30,7 +30,13 @@ class _LoadingPageState extends State<LoadingPage> {
       setState(() {
         _currentStage++;
       });
-    }
+    }else {
+      // All stages complete - navigate to home screen
+      Navigator.pushReplacementNamed(context,'/homescreen');
+      
+           // Replace with your home screen widg
+     
+  }
   }
 
   @override
