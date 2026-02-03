@@ -22,6 +22,8 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
     super.dispose();
   }
 
+  // ... inside _SetPasswordScreenState ...
+
   void _handleSetPassword() {
     if (_passController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -32,14 +34,22 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
 
     if (_passController.text == _confirmPassController.text) {
       // Logic for successful password set
-      print("Password Match! Proceeding...");
-      // Navigator.pushNamed(context, '/home'); 
+      print("Password Match! Moving to Login...");
+      
+      // We use pushReplacement so they can't go back to 'Set Password'
+      Navigator.pushReplacementNamed(context, '/login'); 
+      
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Passwords do not match!")),
+        const SnackBar(
+          content: Text("Passwords do not match!"),
+          backgroundColor: Colors.redAccent,
+        ),
       );
     }
   }
+
+// ... rest of your build method remains the same ...
 
   @override
   Widget build(BuildContext context) {
