@@ -1,21 +1,41 @@
 import 'package:flutter/material.dart';
+import 'home_page_screen.dart'; // Ensure this import matches your file structure
 
-class UniCreateAccountScreen extends StatefulWidget {
-  const UniCreateAccountScreen({super.key});
+class CompanyCreateAccountScreen extends StatefulWidget {
+  const CompanyCreateAccountScreen({super.key});
 
   @override
-  State<UniCreateAccountScreen> createState() => _UniCreateAccountScreenState();
+  State<CompanyCreateAccountScreen> createState() => _CompanyCreateAccountScreenState();
 }
 
-class _UniCreateAccountScreenState extends State<UniCreateAccountScreen> {
+class _CompanyCreateAccountScreenState extends State<CompanyCreateAccountScreen> {
   bool _isPasswordVisible = false;
+  
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _orgController = TextEditingController(text: "Careasa"); 
+  final TextEditingController _roleController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _orgController.dispose();
+    _roleController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: const Icon(Icons.arrow_back, color: Colors.black),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -32,39 +52,38 @@ class _UniCreateAccountScreenState extends State<UniCreateAccountScreen> {
               'Onboard to a More Balanced Life....',
               style: TextStyle(fontSize: 16, color: Colors.grey, fontStyle: FontStyle.italic),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
 
-            // Form Fields
             _buildLabel("Full Name"),
-            _buildCustomTextField(hint: "John Smith"),
+            _buildCustomTextField(hint: "John Smith", controller: _nameController),
             
             _buildLabel("Email Address"),
-            _buildCustomTextField(hint: "email@example.com"),
+            _buildCustomTextField(hint: "email@example.com", controller: _emailController),
             
             _buildLabel("Password"),
             _buildCustomTextField(
               hint: "••••••", 
+              controller: _passwordController,
               isPassword: true, 
               isVisible: _isPasswordVisible,
               onToggle: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
             ),
             
-            _buildLabel("University"),
-            _buildCustomTextField(hint: "DTU"),
+            _buildLabel("Organization"),
+            _buildCustomTextField(hint: "Careasa (Autofill)", controller: _orgController, isReadOnly: true),
+
+            _buildLabel("Role"),
+            _buildCustomTextField(hint: "e.g. Manager", controller: _roleController),
 
             const SizedBox(height: 40),
-
-            // Create Account Button
             _buildMainButton(),
-
             const SizedBox(height: 30),
             _buildSocialDivider(),
             const SizedBox(height: 30),
 
-            // Social Buttons
-            _buildSocialButton("Continue with Google", "assets/google_logo.png", Icons.g_mobiledata),
+            _buildSocialButton("Continue with Google", Icons.g_mobiledata),
             const SizedBox(height: 15),
-            _buildSocialButton("Continue with ios", "", Icons.apple),
+            _buildSocialButton("Continue with Apple", Icons.apple),
 
             const SizedBox(height: 20),
             _buildFooter(),
@@ -75,32 +94,41 @@ class _UniCreateAccountScreenState extends State<UniCreateAccountScreen> {
     );
   }
 
-  // --- UI Helper Widgets ---
+  // --- UI Helpers ---
 
   Widget _buildLabel(String text) => Padding(
-    padding: const EdgeInsets.only(bottom: 8, top: 16),
+    padding: const EdgeInsets.only(bottom: 8, top: 12),
     child: Text(text, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
   );
 
-  Widget _buildCustomTextField({required String hint, bool isPassword = false, bool? isVisible, VoidCallback? onToggle}) {
+  Widget _buildCustomTextField({
+    required String hint, 
+    required TextEditingController controller,
+    bool isPassword = false, 
+    bool? isVisible, 
+    VoidCallback? onToggle,
+    bool isReadOnly = false,
+  }) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: TextField(
+        controller: controller,
+        readOnly: isReadOnly,
         obscureText: isPassword && !(isVisible ?? false),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Colors.grey),
+          hintStyle: TextStyle(color: Colors.grey.shade400),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: isReadOnly ? Colors.grey.shade50 : Colors.white,
           suffixIcon: isPassword ? IconButton(
             icon: Icon(isVisible! ? Icons.visibility : Icons.visibility_outlined, color: Colors.grey),
             onPressed: onToggle,
@@ -108,32 +136,32 @@ class _UniCreateAccountScreenState extends State<UniCreateAccountScreen> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(color: Colors.grey.shade200),
+            borderSide: BorderSide(color: Colors.grey.shade100),
           ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: const BorderSide(color: Colors.black12),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildMainButton() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          )
-        ]
-      ),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          // Navigating to Home and clearing the navigation stack
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false,
+          );
+        },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFD1D1D1),
+          backgroundColor: Colors.black, // Darkened for better "Call to Action"
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           elevation: 0,
         ),
@@ -143,25 +171,25 @@ class _UniCreateAccountScreenState extends State<UniCreateAccountScreen> {
   }
 
   Widget _buildSocialDivider() {
-    return const Row(
+    return Row(
       children: [
-        Expanded(child: Divider()),
+        const Expanded(child: Divider()),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Text("OR SIGN UP WITH", style: TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text("OR SIGN UP WITH", style: TextStyle(color: Colors.grey.shade400, fontSize: 12, fontWeight: FontWeight.bold)),
         ),
-        Expanded(child: Divider()),
+        const Expanded(child: Divider()),
       ],
     );
   }
 
-  Widget _buildSocialButton(String label, String assetPath, IconData icon) {
+  Widget _buildSocialButton(String label, IconData icon) {
     return OutlinedButton(
       onPressed: () {},
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(double.infinity, 60),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        side: BorderSide(color: Colors.grey.shade300),
+        side: BorderSide(color: Colors.grey.shade200),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -176,8 +204,8 @@ class _UniCreateAccountScreenState extends State<UniCreateAccountScreen> {
 
   Widget _buildFooter() {
     return Center(
-      child: GestureDetector(
-        onTap: () {},
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context, '/login'),
         child: RichText(
           text: const TextSpan(
             text: 'Already have an account? ',

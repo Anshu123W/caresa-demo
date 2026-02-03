@@ -4,7 +4,10 @@ import '../pages/signup_screen.dart';
 import '../pages/set_password_screen.dart';
 import '../pages/log_in_screen.dart';
 import '../pages/reset_password_screen.dart';
-
+import '../pages/company_verification_screen.dart';
+import '../pages/university_verification_screen.dart';
+import './pages/uni_create_account_screen.dart';
+import './pages/create_company_account_screen.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -26,6 +29,10 @@ class MyApp extends StatelessWidget {
         '/setPassword': (context) => const SetPasswordScreen(),
         '/login': (context) => const LoginScreen(),
         '/resetPassword': (context) => const ResetPasswordScreen(),
+        '/organization': (context) => const CompanyVerification(),
+        '/university': (context) => const UniversityVerification(),
+        '/uniSignUp': (context) => const UniCreateAccountScreen(),
+        '/companySignUp': (context) => const CompanyCreateAccountScreen(),
       },
     );
   }
