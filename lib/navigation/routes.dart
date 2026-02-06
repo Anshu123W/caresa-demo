@@ -26,7 +26,7 @@ class Routes {
   static const String learningPreference = '/learningPreference';
   static const String m4opensharing = '/m4opensharing';
   static const String insights = '/insights';
-  static const String m4processing= '/m4processing';
-
-
+  static const String m4processing = '/m4processing';
+  static const String m2mindfulness = '/m2mindfulness';
+  static const String m4weekly = '/m4weekly';
 }

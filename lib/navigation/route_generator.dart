@@ -31,6 +31,8 @@ import 'package:firstproduction_pro/pages/stress_location_screen.dart';
 import 'package:firstproduction_pro/pages/stress_challenges_screen.dart';
 import 'package:firstproduction_pro/pages/learning_preference_screen.dart';
 import 'package:firstproduction_pro/pages/open_reflection_screen.dart';
+import 'package:firstproduction_pro/pages/do_you_currently_have_any_mindfulness_routines.dart';
+import 'package:firstproduction_pro/pages/weekly_commitment.dart';
 
 // Pages - Results & Analysis
 import 'package:firstproduction_pro/pages/insights_review_screen.dart';
@@ -97,10 +99,8 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => const OverwhelmedActionsScreen(),
         );
-        case Routes.m5support:
-        return MaterialPageRoute(
-          builder: (_) => const SupportLevelScreen(),
-        );
+      case Routes.m5support:
+        return MaterialPageRoute(builder: (_) => const SupportLevelScreen());
 
       case Routes.m2sleep:
         return MaterialPageRoute(builder: (_) => const SleepQualityScreen());
@@ -118,7 +118,9 @@ class RouteGenerator {
 
       // Ensure this matches the Step 12 Focus Area we built
       case Routes.stresschallenge:
-        return MaterialPageRoute(builder: (_) => const StressChallengesScreen());
+        return MaterialPageRoute(
+          builder: (_) => const StressChallengesScreen(),
+        );
 
       case Routes.learningPreference:
         return MaterialPageRoute(
@@ -139,6 +141,14 @@ class RouteGenerator {
 
       case Routes.insights:
         return MaterialPageRoute(builder: (_) => const M4InsightsScreen());
+
+      case Routes.m2mindfulness:
+        return MaterialPageRoute(
+          builder: (_) => const MindfulnessRoutineScreen(),
+        );
+
+      case Routes.m4weekly:
+        return MaterialPageRoute(builder: (_) => const WeeklyCommitment());
 
       case Routes.home:
         return PageRouteBuilder(

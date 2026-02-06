@@ -117,7 +117,7 @@ class _PhysicalActivityScreenState extends State<PhysicalActivityScreen> {
       height: 60,
       child: ElevatedButton(
         onPressed: isContinueEnabled 
-            ? () => Navigator.pushNamed(context, Routes.stress) 
+            ? () => Navigator.pushNamed(context, Routes.m2mindfulness) 
             : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.black,

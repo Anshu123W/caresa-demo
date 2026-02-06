@@ -101,7 +101,7 @@ class _LearningPreferenceScreenState extends State<LearningPreferenceScreen> {
             const Spacer(),
             ContinueButton(
               onTap: () {
-               Navigator.pushNamed(context, Routes.m4opensharing);
+               Navigator.pushNamed(context, Routes.m4weekly);
               },
             ),
             const SizedBox(height: 40),
