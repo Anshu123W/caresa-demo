@@ -1,20 +1,30 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
+import '../navigation/routes.dart';
 
 class MoodSelectionScreen extends StatefulWidget {
-  const MoodSelectionScreen({super.key});
+  final int questionid_2;
+  const MoodSelectionScreen({super.key,required this.questionid_2});
 
   @override
   State<MoodSelectionScreen> createState() => _MoodSelectionScreenState();
 }
 
 class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
-  // Track the selected mood
   String? selectedMood;
-
+    final Map<String, int> moodanswerids = {
+    'Drained': 1,
+    'Low': 2,
+    'Neutral': 3,
+    'Good':4,
+    'Energetic':5
+  };
   final List<Map<String, String>> moods = [
     {'label': 'Drained', 'emoji': '😫'},
     {'label': 'Low', 'emoji': '😔'},
     {'label': 'Neutral', 'emoji': '😐'},
+    {'label': 'Good', 'emoji': '🙂'}, // Added to balance the scale
+    {'label': 'Energetic', 'emoji': '🤩'},
   ];
 
   @override
@@ -25,12 +35,12 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black54),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Question 2 of 16',
-          style: TextStyle(color: Colors.grey, fontSize: 16),
+          style: TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
       ),
@@ -40,70 +50,102 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 40),
-            // Question Text
             const Text(
-              'Over the past week, how would\nyou describe your overall energy\nand mood?',
+              'Over the past week, how would you describe your overall energy and mood?',
               style: TextStyle(
-                fontSize: 26,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Color(0xFF1A1A1A),
                 height: 1.3,
               ),
             ),
             const SizedBox(height: 60),
-            // Mood Options Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: moods.map((mood) {
-                bool isSelected = selectedMood == mood['label'];
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedMood = mood['label'];
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      // Emoji Container
-                      Text(
-                        mood['emoji']!,
-                        style: const TextStyle(fontSize: 64),
-                      ),
-                      const SizedBox(height: 12),
-                      // Label
-                      Text(
-                        mood['label']!,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.black : Colors.black87,
+            
+            // Mood Options Wrap (better for various screen sizes)
+            Center(
+              child: Wrap(
+                spacing: 20,
+                runSpacing: 20,
+                alignment: WrapAlignment.center,
+                children: moods.map((mood) {
+                  bool isSelected = selectedMood == mood['label'];
+                  return GestureDetector(
+                    onTap: () => setState(() => selectedMood = mood['label']),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.grey.shade50 : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: isSelected ? Colors.black : Colors.transparent,
+                          width: 2,
                         ),
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
+                      child: Column(
+                        children: [
+                          Text(
+                            mood['emoji']!,
+                            style: TextStyle(
+                              fontSize: 48,
+                              // Desaturate non-selected emojis slightly for focus
+                              color: isSelected ? null : Colors.white.withOpacity(0.5),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            mood['label']!,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                              color: isSelected ? Colors.black : Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
+            
             const Spacer(),
-            // Continue Button
+            
             SizedBox(
               width: double.infinity,
-              height: 65,
+              height: 60,
               child: ElevatedButton(
-                onPressed: selectedMood != null ? () {} : null,
+                onPressed: selectedMood != null 
+                  ? () async{
+                    int answer_id=moodanswerids[selectedMood]!;
+                    final success=await sendresponse(
+                   
+                      questionIds:[widget.questionid_2], 
+                      answers: [[answer_id]]
+                      );
+                    if (success){
+                       Navigator.pushNamed(context, Routes.m3primary);
+                    }else{
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save response!')));
+                    }
+                  }
+                  // Navigator.pushNamed(context, Routes.m3primary) 
+                  : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2C2C2E),
-                  disabledBackgroundColor: Colors.grey.shade300,
+                  backgroundColor: Colors.black,
+                  disabledBackgroundColor: Colors.grey.shade200,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(35),
+                    borderRadius: BorderRadius.circular(30),
                   ),
+                  elevation: 0,
                 ),
-                child: const Text(
+                child: Text(
                   'Continue',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                    color: selectedMood != null ? Colors.white : Colors.grey.shade500,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

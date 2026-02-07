@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'home_page_screen.dart'; // Ensure this import matches your file structure
 
 class CompanyCreateAccountScreen extends StatefulWidget {
   const CompanyCreateAccountScreen({super.key});
@@ -11,11 +10,43 @@ class CompanyCreateAccountScreen extends StatefulWidget {
 class _CompanyCreateAccountScreenState extends State<CompanyCreateAccountScreen> {
   bool _isPasswordVisible = false;
   
+  // Controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _orgController = TextEditingController(text: "Careasa"); 
+  final TextEditingController _orgController = TextEditingController(text: "Careasa (Autofill)"); 
   final TextEditingController _roleController = TextEditingController();
+
+  // State variable for button validation
+  bool _isFormValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Add listeners to all controllers to validate the form on every keystroke
+    _nameController.addListener(_validateForm);
+    _emailController.addListener(_validateForm);
+    _passwordController.addListener(_validateForm);
+    _orgController.addListener(_validateForm);
+    _roleController.addListener(_validateForm);
+    
+    // Initial check in case some fields are pre-filled
+    _validateForm();
+  }
+
+  void _validateForm() {
+    final bool isValid = _nameController.text.isNotEmpty &&
+        _emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _orgController.text.isNotEmpty &&
+        _roleController.text.isNotEmpty;
+
+    if (isValid != _isFormValid) {
+      setState(() {
+        _isFormValid = isValid;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -33,7 +64,7 @@ class _CompanyCreateAccountScreenState extends State<CompanyCreateAccountScreen>
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black54),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Colors.transparent,
@@ -46,13 +77,22 @@ class _CompanyCreateAccountScreenState extends State<CompanyCreateAccountScreen>
           children: [
             const Text(
               'Create Your Account',
-              style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, letterSpacing: -1),
+              style: TextStyle(
+                fontSize: 34, 
+                fontWeight: FontWeight.bold, 
+                letterSpacing: -0.5,
+                color: Color(0xFF333333),
+              ),
             ),
             const Text(
               'Onboard to a More Balanced Life....',
-              style: TextStyle(fontSize: 16, color: Colors.grey, fontStyle: FontStyle.italic),
+              style: TextStyle(
+                fontSize: 16, 
+                color: Colors.grey, 
+                fontStyle: FontStyle.italic
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
             _buildLabel("Full Name"),
             _buildCustomTextField(hint: "John Smith", controller: _nameController),
@@ -62,7 +102,7 @@ class _CompanyCreateAccountScreenState extends State<CompanyCreateAccountScreen>
             
             _buildLabel("Password"),
             _buildCustomTextField(
-              hint: "••••••", 
+              hint: "••••••••", 
               controller: _passwordController,
               isPassword: true, 
               isVisible: _isPasswordVisible,
@@ -70,22 +110,32 @@ class _CompanyCreateAccountScreenState extends State<CompanyCreateAccountScreen>
             ),
             
             _buildLabel("Organization"),
-            _buildCustomTextField(hint: "Careasa (Autofill)", controller: _orgController, isReadOnly: true),
+            _buildCustomTextField(hint: "Careasa (Autofill)", controller: _orgController),
 
             _buildLabel("Role"),
             _buildCustomTextField(hint: "e.g. Manager", controller: _roleController),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 40), // Increased spacing for a cleaner look
             _buildMainButton(),
+            
             const SizedBox(height: 30),
             _buildSocialDivider(),
-            const SizedBox(height: 30),
+            const SizedBox(height: 25),
 
-            _buildSocialButton("Continue with Google", Icons.g_mobiledata),
+            _buildSocialButton(
+              "Google", 
+              logo: Image.network(
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_\"G\"_logo.svg/1200px-Google_\"G\"_logo.svg.png',
+                height: 22,
+              ),
+            ),
             const SizedBox(height: 15),
-            _buildSocialButton("Continue with Apple", Icons.apple),
+            _buildSocialButton(
+              "Ios", 
+              logo: const Icon(Icons.apple, color: Colors.black, size: 28),
+            ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
             _buildFooter(),
             const SizedBox(height: 20),
           ],
@@ -94,11 +144,12 @@ class _CompanyCreateAccountScreenState extends State<CompanyCreateAccountScreen>
     );
   }
 
-  // --- UI Helpers ---
-
   Widget _buildLabel(String text) => Padding(
     padding: const EdgeInsets.only(bottom: 8, top: 12),
-    child: Text(text, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+    child: Text(
+      text, 
+      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15, color: Colors.black87)
+    ),
   );
 
   Widget _buildCustomTextField({
@@ -107,115 +158,132 @@ class _CompanyCreateAccountScreenState extends State<CompanyCreateAccountScreen>
     bool isPassword = false, 
     bool? isVisible, 
     VoidCallback? onToggle,
-    bool isReadOnly = false,
   }) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: TextField(
         controller: controller,
-        readOnly: isReadOnly,
         obscureText: isPassword && !(isVisible ?? false),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey.shade400),
-          filled: true,
-          fillColor: isReadOnly ? Colors.grey.shade50 : Colors.white,
+          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 16),
           suffixIcon: isPassword ? IconButton(
-            icon: Icon(isVisible! ? Icons.visibility : Icons.visibility_outlined, color: Colors.grey),
+            icon: Icon(isVisible! ? Icons.visibility : Icons.visibility_off, color: Colors.grey.shade400),
             onPressed: onToggle,
           ) : null,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+            borderSide: BorderSide(color: Colors.grey.shade200),
+          ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(25),
             borderSide: BorderSide(color: Colors.grey.shade100),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Colors.black12),
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 18),
         ),
       ),
     );
   }
 
   Widget _buildMainButton() {
-    return SizedBox(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300), // Smooth color transition
       width: double.infinity,
-      height: 60,
+      height: 65,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(35),
+        boxShadow: [
+          BoxShadow(
+            // Shadow becomes slightly more prominent when active
+            color: _isFormValid ? Colors.black.withOpacity(0.25) : Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
       child: ElevatedButton(
-        onPressed: () {
-          // Navigating to Home and clearing the navigation stack
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-            (route) => false,
-          );
-        },
+        // Disable click if form is not valid
+        onPressed: _isFormValid ? () => Navigator.pushNamed(context, '/primary') : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black, // Darkened for better "Call to Action"
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          // Logic: Black if valid, Greyish-Blue if invalid
+          backgroundColor: _isFormValid ? const Color(0xFF000000) : const Color(0xFFD1D5DB),
+          disabledBackgroundColor: const Color(0xFFD1D5DB), // Ensures color stays same when null
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(35)),
           elevation: 0,
         ),
-        child: const Text('Create Account', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        child: const Text(
+          'Create Account', 
+          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)
+        ),
       ),
     );
   }
 
+  // Divider and Social Buttons remain the same...
   Widget _buildSocialDivider() {
     return Row(
       children: [
         const Expanded(child: Divider()),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text("OR SIGN UP WITH", style: TextStyle(color: Colors.grey.shade400, fontSize: 12, fontWeight: FontWeight.bold)),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Text(
+            "OR SIGN UP WITH", 
+            style: TextStyle(color: Colors.grey.shade400, fontSize: 12, fontWeight: FontWeight.bold),
+          ),
         ),
         const Expanded(child: Divider()),
       ],
     );
   }
 
-  Widget _buildSocialButton(String label, IconData icon) {
-    return OutlinedButton(
-      onPressed: () {},
-      style: OutlinedButton.styleFrom(
-        minimumSize: const Size(double.infinity, 60),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        side: BorderSide(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: Colors.black, size: 28),
-          const SizedBox(width: 10),
-          Text(label, style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500)),
-        ],
+  Widget _buildSocialButton(String provider, {required Widget logo}) {
+    return SizedBox(
+      width: double.infinity,
+      height: 60,
+      child: OutlinedButton(
+        onPressed: () {},
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          side: BorderSide(color: Colors.grey.shade200, width: 1),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            logo,
+            const SizedBox(width: 12),
+            Text(
+              "Continue with $provider", 
+              style: const TextStyle(color: Colors.black, fontSize: 17, fontWeight: FontWeight.w500)
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildFooter() {
-    return Center(
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(context, '/login'),
-        child: RichText(
-          text: const TextSpan(
-            text: 'Already have an account? ',
-            style: TextStyle(color: Colors.grey, fontSize: 14),
-            children: [
-              TextSpan(text: 'Log In', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-            ],
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('Already have an account? ', style: TextStyle(color: Colors.grey, fontSize: 15)),
+        GestureDetector(
+          onTap: () => Navigator.pushNamed(context, '/login'),
+          child: const Text(
+            'Log In', 
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)
           ),
         ),
-      ),
+      ],
     );
   }
 }

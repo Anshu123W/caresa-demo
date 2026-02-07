@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'home_page_screen.dart'; // Ensure this import matches your file name
+import '../navigation/routes.dart';
+import 'home_page_screen.dart';
+import 'assesment_page_screen.dart';
 
 class LoadingPage extends StatefulWidget {
   const LoadingPage({super.key});
@@ -19,12 +21,12 @@ class _LoadingPageState extends State<LoadingPage> {
       'subtitle': 'Personalizing your experience...',
     },
     {
-      'title': 'Crafting your space...',
+      'title': 'Aligning your goals...',
       'subtitle': 'Setting up your wellbeing journey...',
     },
     {
-      'title': 'Crafting your space...',
-      'subtitle': 'Preparing insights based on your goals...',
+      'title': 'Almost there...',
+      'subtitle': 'Preparing insights based on your choices...',
     },
   ];
 
@@ -36,29 +38,29 @@ class _LoadingPageState extends State<LoadingPage> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Always cancel timers to prevent memory leaks
+    _timer?.cancel();
     super.dispose();
   }
 
   void _startLoadingSequence() {
-    // Changes stage every 2 seconds
     _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       if (_currentStage < _loadingStages.length - 1) {
-        setState(() {
-          _currentStage++;
-        });
+        if (mounted) {
+          setState(() => _currentStage++);
+        }
       } else {
         _timer?.cancel();
-        _navigateToHome();
+        _navigateToAssessment();
       }
     });
   }
 
-  void _navigateToHome() {
-    // Using a Fade Transition for a "Zen" feel
+  void _navigateToAssessment() {
+    // We use pushAndRemoveUntil so the user can't "Go Back" into the loading animation
     Navigator.of(context).pushAndRemoveUntil(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const WellbeingAssessmentScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -72,40 +74,52 @@ class _LoadingPageState extends State<LoadingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Using AnimatedSwitcher to smoothly swap text
+            // Circular Progress Indicator for visual motion
+            const SizedBox(
+              height: 40,
+              width: 40,
+              child: CircularProgressIndicator(
+                color: Colors.black,
+                strokeWidth: 2,
+              ),
+            ),
+            const SizedBox(height: 48),
+
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 500),
               child: Text(
                 _loadingStages[_currentStage]['title']!,
-                key: ValueKey(_currentStage),
+                key: ValueKey('title_$_currentStage'),
                 style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
                 ),
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
 
-            // Progress Indicators (Dots)
+            // Subtle Dots Indicator
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(3, (index) {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
-                  margin: const EdgeInsets.symmetric(horizontal: 6),
-                  width: index == _currentStage ? 14 : 10, // Subtle size change
-                  height: index == _currentStage ? 14 : 10,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: index == _currentStage ? 24 : 8,
+                  height: 4,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: index <= _currentStage
+                    borderRadius: BorderRadius.circular(2),
+                    color: index == _currentStage
                         ? Colors.black
-                        : Colors.grey.shade300,
+                        : Colors.grey.shade200,
                   ),
                 );
               }),
@@ -117,12 +131,13 @@ class _LoadingPageState extends State<LoadingPage> {
               duration: const Duration(milliseconds: 500),
               child: Text(
                 _loadingStages[_currentStage]['subtitle']!,
-                key: ValueKey(_currentStage + 10), // Unique key for switcher
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
+                key: ValueKey('sub_$_currentStage'),
                 textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey.shade500,
+                  height: 1.5,
+                ),
               ),
             ),
           ],

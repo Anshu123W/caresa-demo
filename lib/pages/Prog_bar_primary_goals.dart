@@ -1,50 +1,36 @@
 import 'package:flutter/material.dart';
 
-class Stepindicator extends StatelessWidget {
+class StepIndicator extends StatelessWidget {
   final int currentStep;
   final int totalSteps;
-  
-  const Stepindicator({super.key,
-    this.currentStep = 0,
-    this.totalSteps = 3,});
+
+  const StepIndicator({super.key, required this.currentStep, required this.totalSteps});
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'STEP $currentStep OF $totalSteps ',
-          style: TextStyle(
-            color: Colors.grey,
-            fontSize: 12,
-            letterSpacing: 1.2,
-          ),
+          'STEP $currentStep OF $totalSteps',
+          style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.1),
         ),
-                const SizedBox(height: 8),
+        const SizedBox(height: 8),
         Row(
-          children: List.generate(
-            totalSteps,
-            (index) => Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: index < totalSteps - 1 ? 8 : 0,
+          children: List.generate(totalSteps, (index) {
+            return Expanded(
+              child: Container(
+                height: 6,
+                margin: EdgeInsets.only(right: index == totalSteps - 1 ? 0 : 8),
+                decoration: BoxDecoration(
+                  color: index < currentStep ? Colors.black : Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: _bar(active: index < currentStep),
               ),
-            ),
-          ),
-        )
+            );
+          }),
+        ),
       ],
-    );
-  }
-
-  Widget _bar({required bool active}) {
-    return Container(
-      height: 4,
-      decoration: BoxDecoration(
-        color: active ? Colors.black : Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(4),
-      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../navigation/routes.dart'; // Import your constants
 
 class SetPasswordScreen extends StatefulWidget {
   const SetPasswordScreen({super.key});
@@ -11,7 +12,6 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  // Controllers to compare values
   final TextEditingController _passController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
 
@@ -22,34 +22,35 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
     super.dispose();
   }
 
-  // ... inside _SetPasswordScreenState ...
-
   void _handleSetPassword() {
     if (_passController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a password")),
-      );
+      _showError("Please enter a password");
+      return;
+    }
+
+    if (_passController.text.length < 6) {
+      _showError("Password must be at least 6 characters");
       return;
     }
 
     if (_passController.text == _confirmPassController.text) {
-      // Logic for successful password set
-      print("Password Match! Moving to Login...");
-      
-      // We use pushReplacement so they can't go back to 'Set Password'
-      Navigator.pushReplacementNamed(context, '/login'); 
-      
+      // SUCCESS FLOW
+      // We use pushReplacementNamed so the user can't navigate back here.
+      Navigator.pushReplacementNamed(context, Routes.login); 
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Passwords do not match!"),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
+      _showError("Passwords do not match!");
     }
   }
 
-// ... rest of your build method remains the same ...
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +58,13 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Padding(
+      body: SingleChildScrollView( // Added scroll view for smaller devices
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,6 +72,11 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
             const Text(
               'Set Password',
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Secure your account with a strong password.',
+              style: TextStyle(fontSize: 15, color: Colors.grey),
             ),
             const SizedBox(height: 40),
             
@@ -81,7 +87,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
               onToggle: () => setState(() => _obscurePassword = !_obscurePassword),
             ),
             
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             
             _buildPasswordField(
               label: "Re-enter Password",
@@ -90,18 +96,17 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
               onToggle: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
             ),
             
-            const SizedBox(height: 40),
+            const SizedBox(height: 48),
             
-            // Set Password Button
             SizedBox(
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
                 onPressed: _handleSetPassword,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black, // Darker for active state
+                  backgroundColor: Colors.black,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  elevation: 5,
+                  elevation: 2,
                 ),
                 child: const Text(
                   'Set Password',
@@ -131,23 +136,26 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: TextField(
             controller: controller,
             obscureText: isObscured,
+            style: const TextStyle(letterSpacing: 2), // Better look for password dots
             decoration: InputDecoration(
               hintText: "••••••",
+              hintStyle: const TextStyle(letterSpacing: 2, color: Colors.grey),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Colors.grey.shade50,
               suffixIcon: IconButton(
                 icon: Icon(
-                  isObscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  isObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                   color: Colors.grey,
+                  size: 22,
                 ),
                 onPressed: onToggle,
               ),
@@ -159,6 +167,10 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(color: Colors.grey.shade100),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: const BorderSide(color: Colors.black, width: 1.2),
               ),
             ),
           ),

@@ -1,180 +1,355 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class HomeScreen extends StatelessWidget {
+/* ===================== MAIN NAV ===================== */
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _MainNavigationScreenState();
+}
+
+class _MainNavigationScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = const [
+    HomePage(),
+    Center(child: Text("Stats")),
+    Center(child: Text("History")),
+    Center(child: Text("Settings")),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-<<<<<<< HEAD
-        leading: const Icon(Icons.arrow_back, color: Colors.black),
-=======
-        leading: IconButton(
-  icon: const Icon(Icons.arrow_back, color: Colors.black),
-  onPressed: () {
-    Navigator.pop(context); 
-  },
-),
->>>>>>> 91ea3ae5760f9ddd6a59608e8a36ac78efa08570
-        title: Row(
-          children: [
-            const Text('Good Afternoon !', 
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22)),
-            const Spacer(),
-            _buildDateChip(),
-          ],
-        ),
+      body: IndexedStack(index: _selectedIndex, children: _pages),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF9166FF),
+        onPressed: () {},
+        child: const Icon(Icons.add, size: 32),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHorizontalCalendar(),
-            const SizedBox(height: 20),
-            _buildFocusSection(),
-            const SizedBox(height: 20),
-            _buildMotivationSection(),
-            const SizedBox(height: 20),
-            _buildRecommendedSession(),
-            const SizedBox(height: 100), // Space for FAB
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNav(),
-      floatingActionButton: _buildFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: _bottomBar(),
     );
   }
 
-  // --- UI Components ---
-
-  Widget _buildDateChip() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: const Row(
+  Widget _bottomBar() {
+    return BottomAppBar(
+      height: 110,
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 10,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Tue, 20 Jan', style: TextStyle(color: Colors.black, fontSize: 12)),
-          SizedBox(width: 4),
-          Icon(Icons.calendar_today, size: 14, color: Colors.purple),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _navItem(Icons.home_outlined, "Home", 0),
+              _navItem(Icons.bar_chart_outlined, "Stats", 1),
+              const SizedBox(width: 48),
+              _navItem(Icons.history_outlined, "History", 2),
+              _navItem(Icons.settings_outlined, "Settings", 3),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.lock_outline, size: 14, color: Colors.grey),
+              SizedBox(width: 4),
+              Text(
+                "Your data is private and secured",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildHorizontalCalendar() {
+  Widget _navItem(IconData icon, String label, int index) {
+    final active = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedIndex = index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: active ? Colors.black : Colors.grey),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: active ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/* ===================== HOME ===================== */
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  String _getGreeting() {
+    final h = DateTime.now().hour;
+    if (h < 12) return "Good Morning!";
+    if (h < 17) return "Good Afternoon!";
+    return "Good Evening!";
+  }
+
+  void _showCalendar(BuildContext context) {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2035),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final topDate = DateFormat('EEE, d MMM').format(now);
+
+    return SafeArea(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Row(
+              children: [
+                Text(
+                  _getGreeting(),
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => _showCalendar(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F3F3),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(topDate,
+                            style: const TextStyle(fontSize: 12)),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.calendar_today,
+                            size: 14, color: Color(0xFF9166FF)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 140),
+              child: Column(
+                children: const [
+                  DateRow(),
+                  SizedBox(height: 24),
+                  FocusSection(),
+                  SizedBox(height: 24),
+                  MotivationSection(),
+                  SizedBox(height: 24),
+                  RecommendedSection(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/* ===================== DATE ROW ===================== */
+
+class DateRow extends StatelessWidget {
+  const DateRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final today = DateTime.now();
+    final emojis = ["😍", "😟", "😊", "🙂", "😐", "🙂", "😊"];
+
     return SizedBox(
       height: 120,
-      child: ListView(
+      child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        children: [
-          _buildDateItem("Fri", "30", "😍"),
-          _buildDateItem("Sat", "31", "☹️"),
-          _buildDateItem("Sun", "01", "😊", isSelected: true),
-          _buildDateItem("Mon", "02", null),
-          _buildDateItem("Tue", "03", null),
-        ],
+        itemCount: 7,
+        itemBuilder: (context, index) {
+          final date = today.add(Duration(days: index - 3));
+          final isToday = DateUtils.isSameDay(date, today);
+
+          return DateItem(
+            day: DateFormat('EEE').format(date),
+            date: DateFormat('dd').format(date),
+            emoji: emojis[index],
+            selected: isToday,
+          );
+        },
       ),
     );
   }
+}
 
-  Widget _buildDateItem(String day, String date, String? emoji, {bool isSelected = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+class DateItem extends StatelessWidget {
+  final String day;
+  final String date;
+  final String emoji;
+  final bool selected;
+
+  const DateItem({
+    super.key,
+    required this.day,
+    required this.date,
+    required this.emoji,
+    this.selected = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 70,
+      margin: const EdgeInsets.symmetric(horizontal: 6),
       child: Column(
         children: [
-          Text(day, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-          const SizedBox(height: 4),
-          CircleAvatar(
-            radius: 25,
-            backgroundColor: isSelected ? Colors.purple : Colors.transparent,
-            child: Text(date, style: TextStyle(color: isSelected ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+          Text(day, style: const TextStyle(color: Colors.grey)),
+          const SizedBox(height: 6),
+          Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: selected ? const Color(0xFF9166FF) : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              date,
+              style: TextStyle(
+                color: selected ? Colors.white : Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-          if (emoji != null) Text(emoji, style: const TextStyle(fontSize: 20)),
+          const SizedBox(height: 6),
+          Text(emoji, style: const TextStyle(fontSize: 22)),
         ],
       ),
     );
   }
+}
 
-  Widget _buildFocusSection() {
-    return _buildCardWrapper(
-      child: Column(
+/* ===================== SECTIONS ===================== */
+
+class FocusSection extends StatelessWidget {
+  const FocusSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return card(
+      Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Your Focus Today', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const Text('Based on your goals, here\'s what we recommend', style: TextStyle(color: Colors.grey, fontSize: 12)),
+          const Text("Your Focus Today",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          const Text(
+            "Based on your goals, here's what we recommend",
+            style: TextStyle(color: Colors.grey, fontSize: 12),
+          ),
           const SizedBox(height: 16),
           Row(
-            children: [
-              _buildFocusChip("Reduce anxiety"),
-              const SizedBox(width: 12),
-              _buildFocusChip("Mindfulness"),
+            children: const [
+              FocusChip("Reduce anxiety"),
+              SizedBox(width: 12),
+              FocusChip("Mindfulness"),
             ],
-          )
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildFocusChip(String title) {
-    return Expanded(
-      child: Container(
-        height: 80,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(15),
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-      ),
-    );
-  }
+class MotivationSection extends StatelessWidget {
+  const MotivationSection({super.key});
 
-  Widget _buildMotivationSection() {
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.network(
-              'https://picsum.photos/150', // Replace with your meditation image
-              width: 140, height: 140, fit: BoxFit.cover,
+            borderRadius: BorderRadius.circular(24),
+            child: Image.asset(
+              "assets/images/meditation.jpg",
+              width: 160,
+              height: 180,
+              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Stay Calm, Mindful & Stress free', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                const Text('"A calm mind is a powerful mind."', style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12, color: Colors.grey)),
-                const SizedBox(height: 12),
-                _buildProgressCard(),
+                Text(
+                  "Stay Calm, Mindful & Stress free",
+                  style:
+                  TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "\"A calm mind is a powerful mind.\"",
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic),
+                ),
+                SizedBox(height: 12),
+                StreakCard(),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildProgressCard() {
+class StreakCard extends StatelessWidget {
+  const StreakCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,90 +357,94 @@ class HomeScreen extends StatelessWidget {
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Daily progress', style: TextStyle(fontSize: 12, color: Colors.grey)),
-              Icon(Icons.more_horiz, size: 16),
+              Text("Daily progress",
+                  style: TextStyle(color: Colors.grey, fontSize: 12)),
+              Icon(Icons.more_horiz),
             ],
           ),
-          const Text('3-day Calm streak 🔥', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-          const SizedBox(height: 8),
-          LinearProgressIndicator(value: 0.7, backgroundColor: Colors.grey[200], color: Colors.grey[400], minHeight: 6),
+          const SizedBox(height: 6),
+          const Text(
+            "3-day Calm streak 🔥",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: const LinearProgressIndicator(
+              value: 0.7,
+              minHeight: 8,
+              backgroundColor: Color(0xFFE0E0E0),
+              color: Color(0xFF9E9E9E),
+            ),
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildRecommendedSession() {
-    return _buildCardWrapper(
-      child: Column(
+class RecommendedSection extends StatelessWidget {
+  const RecommendedSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return card(
+      const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Recommended Session', style: TextStyle(color: Colors.grey, fontSize: 14)),
-          const SizedBox(height: 8),
-          Container(
-            height: 80,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(15),
-            ),
-            padding: const EdgeInsets.all(16),
-            child: const Text('Try a 5 minute stress\nrelief exercise', style: TextStyle(fontWeight: FontWeight.w500)),
-          )
+          Text("Recommended Session",
+              style: TextStyle(color: Colors.grey)),
+          SizedBox(height: 6),
+          Text("Try a 5 minute stress relief exercise",
+              style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
   }
+}
 
-  Widget _buildCardWrapper({required Widget child}) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10))],
-      ),
-      child: child,
-    );
-  }
+class FocusChip extends StatelessWidget {
+  final String text;
+  const FocusChip(this.text, {super.key});
 
-  Widget _buildBottomNav() {
-    return BottomAppBar(
-      shape: const CircularNotchedRectangle(),
-      notchMargin: 8,
-      child: SizedBox(
-        height: 60,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _navItem(Icons.home_outlined, "Home", isSelected: true),
-            _navItem(Icons.bar_chart, "Stats"),
-            const SizedBox(width: 40), // Space for FAB
-            _navItem(Icons.assignment_outlined, "History"),
-            _navItem(Icons.settings_outlined, "Settings"),
-          ],
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        height: 80,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: const Color(0xFFE5E5E5),
+          borderRadius: BorderRadius.circular(20),
         ),
+        child: Text(text),
       ),
     );
   }
+}
 
-  Widget _navItem(IconData icon, String label, {bool isSelected = false}) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: isSelected ? Colors.black : Colors.grey),
-        Text(label, style: TextStyle(fontSize: 10, color: isSelected ? Colors.black : Colors.grey)),
+/* ===================== CARD ===================== */
+
+Widget card(Widget child) {
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 16),
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: const Color(0xFFE5E5E5),
+      borderRadius: BorderRadius.circular(24),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.12),
+          blurRadius: 30,
+          offset: const Offset(0, 14),
+        ),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.06),
+          blurRadius: 60,
+          offset: const Offset(0, 30),
+        ),
       ],
-    );
-  }
-
-  Widget _buildFab() {
-    return FloatingActionButton(
-      onPressed: () {},
-      backgroundColor: const Color(0xFF9166FF),
-      shape: const CircleBorder(),
-      child: const Icon(Icons.add, color: Colors.white, size: 30),
-    );
-  }
+    ),
+    child: child,
+  );
 }

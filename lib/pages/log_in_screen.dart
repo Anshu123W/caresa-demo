@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../navigation/routes.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,15 +21,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() {
-    final String id = _identifierController.text;
-    final String pass = _passwordController.text;
-
-    if (id.isNotEmpty && pass.isNotEmpty) {
-      // Logic for successful login
-      Navigator.pushReplacementNamed(context, '/primary');
+    if (_identifierController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+      // Use the constant for the 'primary' route
+      Navigator.pushReplacementNamed(context, Routes.primary);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter both credentials")),
+        const SnackBar(
+          content: Text("Please enter both credentials"),
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
   }
@@ -53,64 +54,40 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 40),
 
-            const Text(
-              "Enter Email/Mobile Number",
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            TextField(
+            _buildLabel("Enter Email/Mobile Number"),
+            _buildTextField(
               controller: _identifierController,
-              decoration: InputDecoration(
-                hintText: "email@example.com / +91",
-                filled: true,
-                fillColor: Colors.grey[50],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+              hintText: "email@example.com / +91",
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildLabel("Enter Password"),
+            _buildTextField(
+              controller: _passwordController,
+              hintText: "••••••",
+              obscureText: !_isPasswordVisible,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  color: Colors.grey,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+              ),
+            ),
+
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => Navigator.pushNamed(context, Routes.resetPassword),
+                child: const Text(
+                  "Forgot password?",
+                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
                 ),
               ),
             ),
 
             const SizedBox(height: 20),
-
-            const Text(
-              "Enter Password",
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _passwordController,
-              obscureText: !_isPasswordVisible,
-              decoration: InputDecoration(
-                hintText: "••••••",
-                filled: true,
-                fillColor: Colors.grey[50],
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isPasswordVisible
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    color: Colors.grey,
-                  ),
-                  onPressed: () =>
-                      setState(() => _isPasswordVisible = !_isPasswordVisible),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 40),
 
             SizedBox(
               width: double.infinity,
@@ -118,35 +95,71 @@ class _LoginScreenState extends State<LoginScreen> {
               child: ElevatedButton(
                 onPressed: _handleLogin,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black, // Darker for active state
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   elevation: 0,
                 ),
-                child: const Text(
-                  "Log in",
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
+                child: const Text("Log in", style: TextStyle(color: Colors.white, fontSize: 18)),
               ),
             ),
 
-            Align(
-              alignment: Alignment.centerRight,
+            const SizedBox(height: 30),
+
+            // Navigation back to Signup
+            Center(
               child: TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/resetPassword');
-                },
-                child: const Text(
-                  "Forgot password?",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontStyle: FontStyle.italic,
+                onPressed: () => Navigator.pushNamed(context, Routes.signup),
+                child: RichText(
+                  text: const TextSpan(
+                    style: TextStyle(color: Colors.grey, fontSize: 15),
+                    children: [
+                      TextSpan(text: "Don't have an account? "),
+                      TextSpan(
+                        text: "Sign Up",
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Reusable label widget
+  Widget _buildLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
+    );
+  }
+
+  // Simplified TextField builder
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        hintText: hintText,
+        filled: true,
+        fillColor: Colors.grey[50],
+        suffixIcon: suffixIcon,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.black),
         ),
       ),
     );

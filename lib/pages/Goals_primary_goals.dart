@@ -5,15 +5,13 @@ class GoalTile extends StatelessWidget {
   final String text;
   final bool isSelected;
   final VoidCallback onTap;
-  final double spacing;
 
   const GoalTile({
     super.key,
     required this.icon,
     required this.text,
-    this.isSelected = false,
+    required this.isSelected,
     required this.onTap,
-    this.spacing = 8,
   });
 
   @override
@@ -22,42 +20,27 @@ class GoalTile extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10), // Balanced padding
         decoration: BoxDecoration(
+          color: isSelected ? Colors.black : Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? Colors.black : Colors.grey.shade300,
-            width: isSelected ? 2 : 1,
+            color: isSelected ? Colors.black : Colors.grey.shade200,
+            width: 1.5,
           ),
-          borderRadius: BorderRadius.circular(30),
-          color: isSelected ? Colors.grey.shade50 : Colors.white,
         ),
-        child: Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.black, size: 28),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                text,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                ),
+            Icon(icon, color: isSelected ? Colors.white : Colors.black, size: 32),
+            const SizedBox(height: 12),
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
-            ),
-            SizedBox(width: spacing),
-            Container(
-              height: 22,
-              width: 22,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? Colors.black : Colors.grey.shade400,
-                ),
-                color: isSelected ? Colors.black : Colors.transparent,
-              ),
-              child: isSelected
-                  ? const Icon(Icons.check, color: Colors.white, size: 14)
-                  : null,
             ),
           ],
         ),

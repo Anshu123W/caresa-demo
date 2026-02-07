@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-void main() => runApp(const MaterialApp(home: WellbeingAssessmentScreen()));
+import '../navigation/routes.dart';
 
 class WellbeingAssessmentScreen extends StatelessWidget {
   const WellbeingAssessmentScreen({super.key});
@@ -13,12 +12,12 @@ class WellbeingAssessmentScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black54),
-          onPressed: () {},
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Question 1 of 16',
-          style: TextStyle(color: Colors.grey, fontSize: 16),
+          'Step 1 of 16', // Changed "Question" to "Step" to sound less like a test
+          style: TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
       ),
@@ -26,87 +25,72 @@ class WellbeingAssessmentScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           children: [
-            const SizedBox(height: 40),
-            // Main Title
+            const SizedBox(height: 20),
+            
+            // Hero Title
             const Text(
               'Let\'s map your\nwellbeing landscape',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 32,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF333333),
+                color: Color(0xFF1A1A1A),
                 height: 1.2,
               ),
             ),
-            const SizedBox(height: 30),
+            
+            const SizedBox(height: 24),
+            
             // Description Text
-            const Text(
-              'This short assessment helps us understand your unique patterns, strengths, and areas for support. Your honest responses create a personalized path to clarity. All your answers are private and secure',
+            Text(
+              'This short assessment helps us understand your unique patterns, strengths, and areas for support. All your answers are private and secure.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey,
-                height: 1.5,
+                fontSize: 16,
+                color: Colors.grey.shade600,
+                height: 1.6,
               ),
             ),
+            
             const SizedBox(height: 40),
-            // Info Card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'For organization users only',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Your organization only sees aggregated, anonymous insights',
-                    style: TextStyle(color: Colors.grey.shade700, fontSize: 15),
-                  ),
-                ],
-              ),
-            ),
+            
+            // Privacy Card
+            _buildPrivacyCard(),
+            
             const Spacer(),
-            // Brain Icon (Using a standard Icon as a placeholder)
-            const Icon(Icons.psychology, size: 80, color: Colors.black),
+            
+            // Visual Anchor
+            const Icon(Icons.psychology_outlined, size: 70, color: Colors.black87),
             const SizedBox(height: 16),
             const Text(
               "I'm Ready, Let's Begin",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black87),
             ),
-            const SizedBox(height: 24),
+            
+            const SizedBox(height: 32),
+            
             // Continue Button
             SizedBox(
               width: double.infinity,
-              height: 65,
+              height: 60,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Navigate to the first actual question screen
+                  Navigator.pushNamed(context, Routes.m2mood);
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1A1A1A),
+                  backgroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(30),
                   ),
+                  elevation: 0,
                 ),
                 child: const Text(
                   'CONTINUE',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
-                    letterSpacing: 1.2,
+                    fontSize: 16,
+                    letterSpacing: 1.5,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -115,6 +99,40 @@ class WellbeingAssessmentScreen extends StatelessWidget {
             const SizedBox(height: 40),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildPrivacyCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9F9F9),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.shield_outlined, color: Colors.blueGrey, size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Privacy & Security',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Your organization only sees aggregated, anonymous insights to improve workplace culture.',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 14, height: 1.4),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
