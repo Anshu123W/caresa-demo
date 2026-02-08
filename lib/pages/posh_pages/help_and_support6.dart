@@ -1,8 +1,28 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 
-class HelpAndSupport6 extends StatelessWidget {
+class HelpAndSupport6 extends StatefulWidget {
   const HelpAndSupport6({super.key});
 
+  @override
+  State<HelpAndSupport6> createState() => _HelpAndSupport6State();
+}
+
+class _HelpAndSupport6State extends State<HelpAndSupport6> {
+  String complaintid = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadComplaintId();
+  }
+
+  Future<void> _loadComplaintId() async {
+    final id = await fetchLatestComplaintId();
+    setState(() {
+      complaintid = id ?? '';
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,9 +129,9 @@ class HelpAndSupport6 extends StatelessWidget {
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
+                              children: [
                                 Text(
-                                  'POSH-12475',
+                                  complaintid,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,

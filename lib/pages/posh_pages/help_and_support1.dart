@@ -3,9 +3,11 @@ import 'package:firstproduction_pro/navigation/routes.dart';
 
 class HelpHomeScreen extends StatelessWidget {
   const HelpHomeScreen({super.key});
-
+  
   @override
+  
   Widget build(BuildContext context) {
+  
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -110,7 +112,10 @@ class HelpHomeScreen extends StatelessWidget {
         trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black26, size: 16),
         onTap: () {
           if (routeName != null) {
-            Navigator.pushNamed(context, routeName);
+            final complaintId =
+              ModalRoute.of(context)?.settings.arguments as String?;
+
+            Navigator.pushNamed(context, routeName,arguments:complaintId);
           } else {
             // Handle cases where route isn't ready yet
             ScaffoldMessenger.of(context).showSnackBar(

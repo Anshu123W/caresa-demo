@@ -11,6 +11,7 @@ class ComplaintTrackingScreen extends StatefulWidget {
 
 class _ComplaintTrackingScreenState extends State<ComplaintTrackingScreen>
     with SingleTickerProviderStateMixin {
+      
   // 0: Submitted, 1: Review, 2: Investigation, 3: Resolution
   int currentStep = 2;
   late AnimationController _rotationController;
@@ -47,6 +48,7 @@ class _ComplaintTrackingScreenState extends State<ComplaintTrackingScreen>
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

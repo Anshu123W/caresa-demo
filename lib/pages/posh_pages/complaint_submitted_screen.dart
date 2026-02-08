@@ -1,11 +1,45 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import 'package:firstproduction_pro/navigation/routes.dart';
 
-class ComplaintSubmittedScreen extends StatelessWidget {
-  const ComplaintSubmittedScreen({super.key});
+class ComplaintSubmittedScreen extends StatefulWidget {
+  final String? complaintId;
+
+  const ComplaintSubmittedScreen({super.key, this.complaintId});
+
+  @override
+  State<ComplaintSubmittedScreen> createState() =>
+      _ComplaintSubmittedScreenState();
+}
+
+class _ComplaintSubmittedScreenState
+    extends State<ComplaintSubmittedScreen> {
+
+  String? fetchedId;
+
+  @override
+  void initState() {
+    super.initState();
+    loadComplaintId();
+  }
+
+  Future<void> loadComplaintId() async {
+
+    /// Priority → Use passed complaint ID first
+    if (widget.complaintId != null) {
+      fetchedId = widget.complaintId;
+    } else {
+      fetchedId = await fetchLatestComplaintId();
+    }
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    final displayId = fetchedId;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -70,8 +104,8 @@ class ComplaintSubmittedScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Complaint ID: POSH-2026-1234",
+                    Text(
+                      "Complaint ID: $displayId",
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 16,
