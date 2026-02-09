@@ -48,4 +48,14 @@ class Routes {
   static const String help4 = '/help4';
   static const String help5 = '/help5';
   static const String help6 = '/help6';
+  static const String login2 = '/login2'; 
+  static const String normalUserDashboard = '/normalUserDashboard';
+  static const String organisationUserDashboard = '/organisationUserDashboard';
+  static const String hrDashboard = '/hrDashboard';
+  static const String normalUserLogin = '/normalUserLogin';
+  static const String organisationUsersignup = '/organisationUserSignup';
+  static const String reportmonitoringpage = '/reportMonitoring';
+  // static const String roleSelectionPage = '/roleSelection';
+  
+
 }

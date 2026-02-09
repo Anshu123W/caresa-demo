@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firstproduction_pro/navigation/routes.dart';
+import 'package:firstproduction_pro/backend/backend.dart';
 
 class ComplaintFormScreen extends StatefulWidget {
   const ComplaintFormScreen({Key? key}) : super(key: key);
@@ -34,8 +35,7 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
     super.dispose();
   }
 
-  void _submitComplaint() {
-    // Validate form
+ void _submitComplaint() async {
     if (!isAnonymous && nameController.text.isEmpty) {
       _showSnackBar('Please enter your name');
       return;
@@ -48,20 +48,77 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
       _showSnackBar('Please describe what happened');
       return;
     }
+    if (dateController.text.isEmpty || timeController.text.isEmpty) {
+      _showSnackBar('Please select date and time');
+      return;
+    }
+    if (locationController.text.isEmpty) {
+      _showSnackBar('Please enter location');
+      return;
+    }
 
-    // Handle submission
-    _showSnackBar('Complaint submitted successfully');
-    Navigator.pushNamed(context, Routes.compliantsucess);
-  }
+    final result = await sendComplaint(
+  isAnonymous: isAnonymous,
+  name: isAnonymous ? null : nameController.text.trim(),
+  category: selectedCategory!,
+  description: descriptionController.text.trim(),
+  complaintDate: dateController.text,
+  complaintTime: timeController.text, 
+  location: locationController.text,
+);
 
-  void _saveDraft() {
-    _showSnackBar('Draft saved');
+if (result['success'] == true) {
+  final complaintId = result['complaintId'];
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Complaint submitted! ID: $complaintId')),
+    
+  );
+  Navigator.pushNamed(context, Routes.compliantsucess,arguments: result['complaintId']);
+} else {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Error: ${result['error']}')),
+  );
+}
   }
+  void _saveDraft() => _showSnackBar('Draft saved');
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+    void _clearForm() {
+    nameController.clear();
+    descriptionController.clear();
+    dateController.clear();
+    timeController.clear();
+    locationController.clear();
+    setState(() {
+      selectedCategory = null;
+      isAnonymous = true;
+    });
+  }
+    Future<void> _selectTime(BuildContext context) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.black,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
+    if (picked != null) {
+      final hour = picked.hourOfPeriod.toString().padLeft(2, '0');
+      final minute = picked.minute.toString().padLeft(2, '0');
+      final period = picked.period == DayPeriod.am ? 'AM' : 'PM';
+      timeController.text = '$hour:$minute $period';
+    }
   }
 
   @override
@@ -415,33 +472,4 @@ class _ComplaintFormScreenState extends State<ComplaintFormScreen> {
             '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
       });
     }
-  }
-
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Colors.black,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null) {
-      final hour = picked.hourOfPeriod;
-      final minute = picked.minute.toString().padLeft(2, '0');
-      final period = picked.period == DayPeriod.am ? 'AM' : 'PM';
-      setState(() {
-        timeController.text =
-            '${hour.toString().padLeft(2, '0')}:$minute $period';
-      });
-    }
-  }
-}
+  }}

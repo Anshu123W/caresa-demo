@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'complaint_submitted_screen.dart';
-
+late final String? complaintId;
 class ComplaintRegisteredScreen extends StatefulWidget {
   const ComplaintRegisteredScreen({super.key});
 
@@ -11,18 +11,21 @@ class ComplaintRegisteredScreen extends StatefulWidget {
 
 class _ComplaintRegisteredScreenState
     extends State<ComplaintRegisteredScreen> {
-
+ 
   @override
-  void initState() {
-    super.initState();
-
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
-
+    
       Navigator.pushReplacement(
         context,
+        
         MaterialPageRoute(
-          builder: (_) => const ComplaintSubmittedScreen(),
+          builder: (_) =>  ComplaintSubmittedScreen(
+ 
+          ),
         ),
       );
     });
@@ -30,6 +33,7 @@ class _ComplaintRegisteredScreenState
 
   @override
   Widget build(BuildContext context) {
+    
     return const Scaffold(
       backgroundColor: Colors.white,
       body: Center(

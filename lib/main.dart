@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue, // Material 3 uses seeds for better color palettes
       ),
-      initialRoute: Routes.posh1,
+      initialRoute: Routes.welcome,
       onGenerateRoute: RouteGenerator.generateRoute,
       navigatorKey: navigatorKey,
     );

@@ -11,7 +11,6 @@ import 'package:firstproduction_pro/pages/auth/company_verification_screen.dart'
 import 'package:firstproduction_pro/pages/auth/university_verification_screen.dart';
 import 'package:firstproduction_pro/pages/auth/uni_create_account_screen.dart';
 import 'package:firstproduction_pro/pages/auth/create_company_account_screen.dart';
-
 // Pages - Core App & Onboarding
 import 'package:firstproduction_pro/pages/auth/Primary_goals.dart';
 import 'package:firstproduction_pro/pages/main_screens/home_page_screen.dart';
@@ -55,6 +54,15 @@ import 'package:firstproduction_pro/pages/posh_pages/help_and_support3.dart';
 import 'package:firstproduction_pro/pages/posh_pages/help_support_screen4.dart';
 import 'package:firstproduction_pro/pages/posh_pages/help_and_support5.dart';
 import 'package:firstproduction_pro/pages/posh_pages/help_and_support6.dart';
+import 'package:firstproduction_pro/pages/new_pages/hr_dashboard_page.dart';
+import 'package:firstproduction_pro/pages/new_pages/login_page.dart';
+import 'package:firstproduction_pro/pages/new_pages/normal_user_dashboard_page.dart';
+import 'package:firstproduction_pro/pages/new_pages/normal_user_dashboard_page.dart';
+import 'package:firstproduction_pro/pages/new_pages/normal_user_login_page.dart';
+import 'package:firstproduction_pro/pages/new_pages/organisation_user_dashboard_page.dart';
+import 'package:firstproduction_pro/pages/new_pages/organisation_user_signup_page.dart';
+import 'package:firstproduction_pro/pages/new_pages/report_monitoring_page.dart';
+import 'package:firstproduction_pro/pages/new_pages/role_selection_page.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -64,7 +72,7 @@ class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case Routes.welcome:
-        return MaterialPageRoute(builder: (_) => const WelcomeScreen());
+        return MaterialPageRoute(builder: (_) => const RoleSelectionPage());
       case Routes.signup:
         return MaterialPageRoute(builder: (_) => const SignUpScreen());
       case Routes.setPassword:
@@ -236,6 +244,27 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const HelpAndSupport5());
       case Routes.help6:
         return MaterialPageRoute(builder: (_) => const HelpAndSupport6());
+      case Routes.login2:
+        return MaterialPageRoute(builder: (_) => const LoginPage());
+      case Routes.normalUserDashboard:
+        return MaterialPageRoute(builder: (_) => const NormalUserDashboardPage());
+      case Routes.organisationUserDashboard:
+        return MaterialPageRoute(
+          builder: (_) => const OrganisationUserDashboardPage(),
+        );
+      case Routes.hrDashboard:
+        return MaterialPageRoute(builder: (_) => const HrDashboardPage());
+      case Routes.normalUserLogin:
+        return MaterialPageRoute(builder: (_) => const NormalUserLoginPage());
+      case Routes.organisationUsersignup:
+        return MaterialPageRoute(
+          builder: (_) => const OrganisationUserSignupPage(),
+        );
+        case Routes.reportmonitoringpage:
+          return MaterialPageRoute(builder: (_) => const ReportMonitoringPage());
+        // case Routes.roleSelectionPage:
+        //   return MaterialPageRoute(builder: (_) => const RoleSelectionPage());
+
       default:
         return _errorRoute();
     }
@@ -248,3 +277,4 @@ class RouteGenerator {
     );
   }
 }
+ 
