@@ -17,7 +17,7 @@ class _HrScreenState extends State<HrScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/update-status'),
+        Uri.parse('http://localhost:5000/update-status'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'status': status}),
       );

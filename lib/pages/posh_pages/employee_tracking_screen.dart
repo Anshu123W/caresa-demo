@@ -33,7 +33,7 @@
 
 //   Future<void> fetchStatus() async {
 //     try {
-//       final res = await http.get(Uri.parse('http://10.0.2.2:3000/status'))
+//       final res = await http.get(Uri.parse('http://10.0.2.2:5000/status'))
 //           .timeout(const Duration(seconds: 3)); // Add timeout to prevent hanging
 
 //       if (res.statusCode == 200) {

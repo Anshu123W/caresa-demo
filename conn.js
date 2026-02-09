@@ -1,4 +1,4 @@
-import sql from './dbconn.js';
+import sql from './backend/dbconn.js';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -69,8 +69,4 @@ app.post("/responses", async (req, res) => {
     console.log(err);
     res.status(500).json({ error: "Database Error", details: err.message });
   }
-});
-
-app.listen(5000, () => {
-  console.log('Server running on port 5000');
 });

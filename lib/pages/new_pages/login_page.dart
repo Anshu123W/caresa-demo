@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
 
   // Auto-detect platform (web or emulator)
   String get baseUrl =>
-      kIsWeb ? "http://localhost:3000" : "http://10.0.2.2:3000";
+      kIsWeb ? "http://localhost:5000" : "http://10.0.2.2:5000";
 
   Future<void> login() async {
     setState(() => isLoading = true);

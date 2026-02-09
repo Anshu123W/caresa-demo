@@ -21,7 +21,7 @@ class _NormalUserSignupPageState extends State<NormalUserSignupPage> {
   bool isLoading = false;
 
   String get baseUrl =>
-      kIsWeb ? "http://localhost:3000" : "http://10.0.2.2:3000";
+      kIsWeb ? "http://localhost:5000" : "http://10.0.2.2:5000";
 
   Future<void> signupNormalUser() async {
     setState(() => isLoading = true);

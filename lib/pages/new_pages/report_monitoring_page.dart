@@ -17,7 +17,7 @@ class _ReportMonitoringPageState
 
   // Auto platform URL
   String get baseUrl =>
-      kIsWeb ? "http://localhost:3000" : "http://10.0.2.2:3000";
+      kIsWeb ? "http://localhost:5000" : "http://10.0.2.2:5000";
 
   Future<void> updateStatus(String status) async {
     setState(() => selectedStatus = status);
