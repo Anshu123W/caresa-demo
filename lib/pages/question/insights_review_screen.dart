@@ -1,10 +1,15 @@
 import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../new_pages/normal_user_dashboard_page.dart';
+import '../new_pages/organisation_user_dashboard_page.dart';
 
 class M4InsightsScreen extends StatefulWidget {
   final int questionid_15;
-  
-  const M4InsightsScreen({Key? key, required this.questionid_15}) : super(key: key);
+
+  const M4InsightsScreen({Key? key, required this.questionid_15})
+      : super(key: key);
 
   @override
   State<M4InsightsScreen> createState() => _M4InsightsScreenState();
@@ -17,7 +22,6 @@ class _M4InsightsScreenState extends State<M4InsightsScreen> {
     "Personal Context": 103,
   };
 
-  // Track selected cards
   final Set<String> selectedInsights = {};
   bool isSaving = false;
 
@@ -28,7 +32,6 @@ class _M4InsightsScreenState extends State<M4InsightsScreen> {
         selectedInsights.map((opt) => insightOptionIds[opt]!).toList();
 
     final success = await sendresponse(
- 
       questionIds: [widget.questionid_15],
       answers: [answerIds],
     );
@@ -36,7 +39,30 @@ class _M4InsightsScreenState extends State<M4InsightsScreen> {
     setState(() => isSaving = false);
 
     if (success) {
-      Navigator.pushNamed(context, '/m4processing');
+      final prefs = await SharedPreferences.getInstance();
+
+      // Default to normal if not set
+      final userType = prefs.getString('userType') ?? 'normal';
+
+      print("UserType after assessment: $userType");
+
+      if (!mounted) return;
+
+      if (userType == 'organisation') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const OrganisationUserDashboardPage(),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const NormalUserDashboardPage(),
+          ),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to save insights!')),
@@ -96,35 +122,46 @@ class _M4InsightsScreenState extends State<M4InsightsScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
+
               _InsightCard(
                 title: 'Your Emotional Baseline',
-                isSelected: selectedInsights.contains('Emotional Baseline'),
+                isSelected:
+                    selectedInsights.contains('Emotional Baseline'),
                 onTap: () => _toggleInsight('Emotional Baseline'),
               ),
               const SizedBox(height: 16),
+
               _InsightCard(
                 title: 'Your Lifestyle Habits',
-                isSelected: selectedInsights.contains('Lifestyle Habits'),
+                isSelected:
+                    selectedInsights.contains('Lifestyle Habits'),
                 onTap: () => _toggleInsight('Lifestyle Habits'),
               ),
               const SizedBox(height: 16),
+
               _InsightCard(
                 title: 'Your Personal Context',
-                isSelected: selectedInsights.contains('Personal Context'),
+                isSelected:
+                    selectedInsights.contains('Personal Context'),
                 onTap: () => _toggleInsight('Personal Context'),
               ),
+
               const Spacer(),
+
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: selectedInsights.isEmpty || isSaving ? null : _saveInsights,
+                  onPressed: selectedInsights.isEmpty || isSaving
+                      ? null
+                      : _saveInsights,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: selectedInsights.isEmpty
                         ? const Color(0xFFBDBDBD)
                         : Colors.black,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: const Color(0xFFBDBDBD),
+                    disabledBackgroundColor:
+                        const Color(0xFFBDBDBD),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -181,11 +218,13 @@ class _InsightCard extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          padding: const EdgeInsets.symmetric(
+              vertical: 20, horizontal: 24),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isSelected ? Colors.black : Colors.transparent,
+              color:
+                  isSelected ? Colors.black : Colors.transparent,
               width: 2,
             ),
           ),

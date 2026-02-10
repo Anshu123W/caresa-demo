@@ -1,8 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../new_pages/normal_user_dashboard_page.dart';
+import '../new_pages/organisation_user_dashboard_page.dart';
 import '../../navigation/routes.dart';
 
 class WellbeingAssessmentScreen extends StatelessWidget {
   const WellbeingAssessmentScreen({super.key});
+
+  // Function to route to correct dashboard (used after final question)
+  Future<void> _goToDashboard(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userType = prefs.getString('userType');
+
+    if (userType == 'organisation') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const OrganisationUserDashboardPage(),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const NormalUserDashboardPage(),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,12 +38,20 @@ class WellbeingAssessmentScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Step 1 of 16', // Changed "Question" to "Step" to sound less like a test
-          style: TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w600),
+          'Step 1 of 16',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         centerTitle: true,
       ),
@@ -26,8 +60,7 @@ class WellbeingAssessmentScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            
-            // Hero Title
+
             const Text(
               'Let\'s map your\nwellbeing landscape',
               textAlign: TextAlign.center,
@@ -38,10 +71,9 @@ class WellbeingAssessmentScreen extends StatelessWidget {
                 height: 1.2,
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
-            // Description Text
+
             Text(
               'This short assessment helps us understand your unique patterns, strengths, and areas for support. All your answers are private and secure.',
               textAlign: TextAlign.center,
@@ -51,31 +83,36 @@ class WellbeingAssessmentScreen extends StatelessWidget {
                 height: 1.6,
               ),
             ),
-            
+
             const SizedBox(height: 40),
-            
-            // Privacy Card
+
             _buildPrivacyCard(),
-            
+
             const Spacer(),
-            
-            // Visual Anchor
-            const Icon(Icons.psychology_outlined, size: 70, color: Colors.black87),
+
+            const Icon(
+              Icons.psychology_outlined,
+              size: 70,
+              color: Colors.black87,
+            ),
             const SizedBox(height: 16),
             const Text(
               "I'm Ready, Let's Begin",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black87),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
             ),
-            
+
             const SizedBox(height: 32),
-            
-            // Continue Button
+
+            // Continue Button → FIRST QUESTION
             SizedBox(
               width: double.infinity,
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigate to the first actual question screen
                   Navigator.pushNamed(context, Routes.m2mood);
                 },
                 style: ElevatedButton.styleFrom(
@@ -96,6 +133,7 @@ class WellbeingAssessmentScreen extends StatelessWidget {
                 ),
               ),
             ),
+
             const SizedBox(height: 40),
           ],
         ),
@@ -114,7 +152,11 @@ class WellbeingAssessmentScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.shield_outlined, color: Colors.blueGrey, size: 24),
+          const Icon(
+            Icons.shield_outlined,
+            color: Colors.blueGrey,
+            size: 24,
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -122,12 +164,20 @@ class WellbeingAssessmentScreen extends StatelessWidget {
               children: [
                 const Text(
                   'Privacy & Security',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black87,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   'Your organization only sees aggregated, anonymous insights to improve workplace culture.',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 14, height: 1.4),
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),

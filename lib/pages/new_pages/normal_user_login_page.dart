@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'normal_user_dashboard_page.dart';
+import '../../navigation/routes.dart';
 
 class NormalUserLoginPage extends StatefulWidget {
   const NormalUserLoginPage({super.key});
@@ -19,6 +20,7 @@ class _NormalUserLoginPageState
   final passwordController = TextEditingController();
 
   bool isLoading = false;
+  bool obscurePassword = true;
 
   String get baseUrl =>
       kIsWeb ? "http://localhost:5000" : "http://10.0.2.2:5000";
@@ -43,28 +45,30 @@ class _NormalUserLoginPageState
       if (response.statusCode == 200) {
         final role = data["role"];
 
-        // 🔴 Only allow normal users
         if (role == "normal_user") {
-          Navigator.pushReplacement(
+          final prefs = await SharedPreferences.getInstance();
+
+          await prefs.remove('userType');
+          await prefs.setString('userType', 'normal');
+
+          Navigator.pushReplacementNamed(
             context,
-            MaterialPageRoute(
-              builder: (_) => const NormalUserDashboardPage(),
-            ),
+            Routes.primary,
           );
         } else {
-          // Block HR and organisation users
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                  "This login is only for normal users."),
+              content:
+                  Text("This login is only for normal users."),
             ),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content:
-                  Text(data["error"] ?? "Invalid credentials")),
+            content:
+                Text(data["error"] ?? "Invalid credentials"),
+          ),
         );
       }
     } catch (e) {
@@ -79,42 +83,118 @@ class _NormalUserLoginPageState
     }
   }
 
+  InputDecoration inputStyle(String hint, {Widget? suffix}) {
+    return InputDecoration(
+      hintText: hint,
+      suffixIcon: suffix,
+      filled: true,
+      fillColor: const Color(0xFFF4F4F4),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: BorderSide.none,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-      appBar: AppBar(title: const Text("User Login")),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            TextField(
-              controller: emailController,
-              decoration:
-                  const InputDecoration(labelText: "Email"),
-            ),
-            const SizedBox(height: 16),
-
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration:
-                  const InputDecoration(labelText: "Password"),
-            ),
-            const SizedBox(height: 24),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: isLoading ? null : login,
-                child: isLoading
-                    ? const CircularProgressIndicator(
-                        color: Colors.white,
-                      )
-                    : const Text("Login"),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 10),
+
+              const Text(
+                "Welcome Back",
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              const Text(
+                "Login to continue your journey",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              const Text("Email Address",
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 6),
+              TextField(
+                controller: emailController,
+                decoration: inputStyle("email@example.com"),
+              ),
+              const SizedBox(height: 20),
+
+              const Text("Password",
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 6),
+              TextField(
+                controller: passwordController,
+                obscureText: obscurePassword,
+                decoration: inputStyle(
+                  "••••••••",
+                  suffix: IconButton(
+                    icon: Icon(
+                      obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscurePassword = !obscurePassword;
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade400,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text(
+                          "Log In",
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.white),
+                        ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../navigation/routes.dart';
-import 'normal_user_dashboard_page.dart';
 import 'normal_user_login_page.dart';
 
 class NormalUserSignupPage extends StatefulWidget {
@@ -14,16 +15,17 @@ class NormalUserSignupPage extends StatefulWidget {
       _NormalUserSignupPageState();
 }
 
-class _NormalUserSignupPageState extends State<NormalUserSignupPage> {
+class _NormalUserSignupPageState
+    extends State<NormalUserSignupPage> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   bool isLoading = false;
+  bool obscurePassword = true;
 
-  // Base URL
   String get baseUrl =>
-      kIsWeb ? "http://localhost:5000" : "http://10.0.2.2:5000";
+      kIsWeb ? "http://localhost:3000" : "http://10.0.2.2:3000";
 
   Future<void> signupNormalUser() async {
     setState(() => isLoading = true);
@@ -44,12 +46,12 @@ class _NormalUserSignupPageState extends State<NormalUserSignupPage> {
       if (!mounted) return;
 
       if (response.statusCode == 201) {
-        // Navigate to dashboard after successful signup
-        Navigator.pushReplacement(
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userType', 'normal');
+
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(
-            builder: (_) => const NormalUserDashboardPage(),
-          ),
+          Routes.primary,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -68,101 +70,213 @@ class _NormalUserSignupPageState extends State<NormalUserSignupPage> {
     }
   }
 
+  InputDecoration inputStyle(String label, {Widget? suffix}) {
+    return InputDecoration(
+      labelText: label,
+      suffixIcon: suffix,
+      filled: true,
+      fillColor: const Color(0xFFF4F4F4),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: BorderSide.none,
+      ),
+    );
+  }
+
+  Widget socialButton(IconData icon, String text) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4F4F4),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 20),
+          const SizedBox(width: 10),
+          Text(
+            text,
+            style: const TextStyle(
+                fontSize: 15, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(
+              horizontal: 24, vertical: 16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.pop(context),
-                ),
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
               const Text(
                 "Create Your Account",
                 style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              const Text(
+                "Onboard to a More Balanced Life....",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                  fontStyle: FontStyle.italic,
                 ),
               ),
 
               const SizedBox(height: 30),
 
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+              const Text("Full Name",
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 6),
+              TextField(
+                controller: nameController,
+                decoration: inputStyle("John Smith"),
+              ),
+              const SizedBox(height: 20),
+
+              const Text("Email Address",
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 6),
+              TextField(
+                controller: emailController,
+                decoration: inputStyle("email@example.com"),
+              ),
+              const SizedBox(height: 20),
+
+              const Text("Password",
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 6),
+              TextField(
+                controller: passwordController,
+                obscureText: obscurePassword,
+                decoration: inputStyle(
+                  "••••••••",
+                  suffix: IconButton(
+                    icon: Icon(obscurePassword
+                        ? Icons.visibility_off
+                        : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        obscurePassword = !obscurePassword;
+                      });
+                    },
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: nameController,
-                      decoration:
-                          const InputDecoration(labelText: "Full Name"),
-                    ),
-                    const SizedBox(height: 16),
+              ),
+              const SizedBox(height: 20),
 
-                    TextField(
-                      controller: emailController,
-                      decoration:
-                          const InputDecoration(labelText: "Email"),
-                    ),
-                    const SizedBox(height: 16),
+              const Text("Organization",
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 6),
+              TextField(
+                enabled: false,
+                decoration:
+                    inputStyle("Careasa (Autofill)"),
+              ),
+              const SizedBox(height: 30),
 
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration:
-                          const InputDecoration(labelText: "Password"),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed:
+                      isLoading ? null : signupNormalUser,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade400,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-
-                    const SizedBox(height: 24),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed:
-                            isLoading ? null : signupNormalUser,
-                        child: isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text("Create Account"),
-                      ),
-                    ),
-                  ],
+                  ),
+                  child: isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text(
+                          "Create Account",
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white),
+                        ),
                 ),
+              ),
+
+              const SizedBox(height: 30),
+
+              Row(
+                children: const [
+                  Expanded(child: Divider()),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      "OR SIGN UP WITH",
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Expanded(child: Divider()),
+                ],
               ),
 
               const SizedBox(height: 20),
 
-              // Login button
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const NormalUserLoginPage(),
+              socialButton(Icons.g_mobiledata,
+                  "Continue with Google"),
+              const SizedBox(height: 12),
+              socialButton(Icons.apple,
+                  "Continue with iOS"),
+
+              const SizedBox(height: 20),
+
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const NormalUserLoginPage(),
+                      ),
+                    );
+                  },
+                  child: const Text.rich(
+                    TextSpan(
+                      text: "Already have an account? ",
+                      children: [
+                        TextSpan(
+                          text: "Log In",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-                child: const Text("Already have an account? Login"),
+                  ),
+                ),
               ),
             ],
           ),
