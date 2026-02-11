@@ -99,7 +99,7 @@ class _TopBarState extends State<TopBar> {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: selectedGoals.length == maxSelections
-                      ? () => Navigator.pushNamed(context, Routes.loading)
+                      ? () => Navigator.pushNamed(context, Routes.home)
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,

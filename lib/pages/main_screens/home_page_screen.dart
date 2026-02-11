@@ -1,3 +1,4 @@
+import 'package:firstproduction_pro/navigation/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -13,9 +14,10 @@ class HomeScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
+  // Updated List to include your ExploreScreen content
   final List<Widget> _pages = const [
     HomePage(),
-    Center(child: Text("Stats")),
+    ExplorePage(), 
     Center(child: Text("History")),
     Center(child: Text("Settings")),
   ];
@@ -28,7 +30,7 @@ class _MainNavigationScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF9166FF),
         onPressed: () {},
-        child: const Icon(Icons.add, size: 32),
+        child: const Icon(Icons.add, size: 32, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _bottomBar(),
@@ -47,7 +49,7 @@ class _MainNavigationScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _navItem(Icons.home_outlined, "Home", 0),
-              _navItem(Icons.bar_chart_outlined, "Stats", 1),
+              _navItem(Icons.explore_outlined, "Explore", 1),
               const SizedBox(width: 48),
               _navItem(Icons.history_outlined, "History", 2),
               _navItem(Icons.settings_outlined, "Settings", 3),
@@ -73,6 +75,7 @@ class _MainNavigationScreenState extends State<HomeScreen> {
   Widget _navItem(IconData icon, String label, int index) {
     final active = _selectedIndex == index;
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => setState(() => _selectedIndex = index),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -82,6 +85,7 @@ class _MainNavigationScreenState extends State<HomeScreen> {
             label,
             style: TextStyle(
               fontSize: 12,
+              color: active ? Colors.black : Colors.grey,
               fontWeight: active ? FontWeight.bold : FontWeight.normal,
             ),
           ),
@@ -90,6 +94,233 @@ class _MainNavigationScreenState extends State<HomeScreen> {
     );
   }
 }
+
+/* ===================== EXPLORE PAGE ===================== */
+
+/* ===================== EXPLORE PAGE ===================== */
+
+/* ===================== EXPLORE PAGE ===================== */
+
+class ExplorePage extends StatelessWidget {
+  const ExplorePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Explore',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.search, color: Colors.black),
+                  onPressed: () {
+                    // Search functionality could go here
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+            child: Column(
+              children: [
+                // 1. SWOT CARD - Clickable
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DetailScreen(title: "SWOT Journaling"),
+                    ),
+                  ),
+                  child: _buildFeaturedCard(),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    // 2. DAILY JOURNAL - Clickable
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DetailScreen(title: "Daily Journal"),
+                          ),
+                        ),
+                        child: _buildSmallCard('Daily Journal', 'Write it out', Icons.edit_note),
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    // 3. MOOD TRACKING - Clickable (using your Routes)
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.pushNamed(context, Routes.assessment),
+                        child: _buildSmallCard('Mood Tracking', 'Check in', Icons.sentiment_satisfied_alt),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                // 4. PROGRESS CARD - Clickable
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DetailScreen(title: "POSH Module"),
+                    ),
+                  ),
+                  child: _buildProgressCard(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ... (Keep your _buildFeaturedCard, _buildSmallCard, and _buildProgressCard methods exactly as they were)
+  
+  Widget _buildFeaturedCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(32),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text('FEATURED', style: TextStyle(color: Colors.white, fontSize: 10)),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'SWOT\nJournaling',
+            style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, height: 1.1),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Analyze your Strengths, Weaknesses, Opportunities, and Threats.',
+            style: TextStyle(color: Colors.grey[400], fontSize: 14),
+          ),
+          const SizedBox(height: 24),
+          const Row(
+            children: [
+              Text('Start Analysis', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              SizedBox(width: 8),
+              Icon(Icons.arrow_forward, color: Colors.white, size: 18),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmallCard(String title, String subtitle, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      height: 200,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F2F2),
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.white,
+            child: Icon(icon, color: Colors.black),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFFEEEEEE)),
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(8)),
+            child: const Text('POSH', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Prevention of Sexual Harassment', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('MODULE 3 OF 5', style: TextStyle(color: Colors.grey, fontSize: 10)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(height: 4, width: 40, decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(2))),
+        ],
+      ),
+    );
+  }
+}
+
+/* ===================== DETAIL SCREEN ===================== */
+
+class DetailScreen extends StatelessWidget {
+  final String title;
+  const DetailScreen({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(title, style: const TextStyle(color: Colors.black)),
+      ),
+      body: Center(
+        child: Text(
+          "Welcome to the $title page!",
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        ),
+      ),
+    );
+  }
+}
+/* ===================== HOME PAGE ===================== */
+// (Keep your existing HomePage, DateRow, FocusSection, etc. here)
 
 /* ===================== HOME ===================== */
 
@@ -448,3 +679,5 @@ Widget card(Widget child) {
     child: child,
   );
 }
+/* ===================== DETAIL PAGE ===================== */
+
