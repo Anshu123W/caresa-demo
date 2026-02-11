@@ -185,18 +185,7 @@ class _NormalUserSignupPageState
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-
-              const Text("Organization",
-                  style: TextStyle(fontWeight: FontWeight.w600)),
-              const SizedBox(height: 6),
-              TextField(
-                enabled: false,
-                decoration:
-                    inputStyle("Careasa (Autofill)"),
-              ),
-              const SizedBox(height: 30),
-
+             
               SizedBox(
                 width: double.infinity,
                 height: 55,
